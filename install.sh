@@ -87,14 +87,11 @@ else
 	echo "PATH=\"/usr/local/bin/arcanist/bin:\$PATH\"" >> /home/$username/.bashrc
 fi
 
-# Reload .bashrc
-source /home/$username/.bashrc
-
 # Configure arc
 su $username -c "/usr/local/bin/arcanist/bin/arc  \
 	--conduit-uri=https://phabricator.wikimedia.org install-certificate"
-
-echo "Be sure to add your public key to gerrit \
+echo -e "\n"
+echo "Add your new public key to gerrit at: \
  https://gerrit.wikimedia.org/r/#/settings/ssh-keys"
-echo "Paste your public key:"
+echo -e "\n"
 cat "$pubkeypath.pub"
