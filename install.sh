@@ -90,13 +90,9 @@ fi
 # Reload .bashrc
 source /home/$username/.bashrc
 
-# Phabricator
-echo "Goto https://phabricator.wikimedia.org/conduit/login/ \ n
-	to get an API key and copy it to the clipboard"
-read phabricatorApiKey
-
-#configure arc
-su -c "arc --conduit-uri=https://phabricator.wikimedia.org install-certificate" -m $username
+# Configure arc
+su $username -c "/usr/local/bin/arcanist/bin/arc  \
+	--conduit-uri=https://phabricator.wikimedia.org install-certificate"
 
 echo "Be sure to add your public key to gerrit \
  https://gerrit.wikimedia.org/r/#/settings/ssh-keys"
