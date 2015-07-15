@@ -22,13 +22,10 @@ else
 	echo "Creating $username user."
 	#add user
 	adduser $username --home /home/$username
-	mkdir /home/$username/bin
 
-	cd /home/$username/bin && git clone https://github.com/jdlrobson/Barry-the-Browser-Test-Bot.git barrybot
-	# Add barrybot bin to the path
-	echo "PATH=\"/home/$username/bin/barrybot/bin:\$PATH\"" >> /home/$username/.bashrc
-
-	chown -R $username:$username /home/$username/bin
+	cd /home/$username && git clone https://github.com/jdlrobson/Barry-the-Browser-Test-Bot.git barrybot
+	# Add barrybot to the path
+	echo "PATH=\"/home/$username/barrybot:\$PATH\"" >> /home/$username/.bashrc
 
 	# Generate ssh key
 	echo "Please enter a path for your new public key: (default is /home/$username/.ssh/id_rsa)"
@@ -78,7 +75,6 @@ else
 	echo "export MEDIAWIKI_API_URL=$MEDIAWIKI_API_URL" >> /home/$username/.bashrc
 	echo "export MEDIAWIKI_LOAD_URL=$MEDIAWIKI_LOAD_URL" >> /home/$username/.bashrc
 	echo "export BROWSER=$BROWSER" >> /home/$username/.bashrc
-
 fi
 
 # Install npm if not installed
@@ -99,8 +95,10 @@ else
 	npm install -g phantomjs
 fi
 
-# Insatll ruby and ruby-dev
+# Install ruby and ruby-dev
 apt-get install ruby ruby-dev
+# update rubgems
+gem update --system
 
 # Install bundler gem if not installed
 if test -e /usr/local/bin/bundler; then
@@ -144,3 +142,40 @@ echo "Add your new public key to gerrit at: \
  https://gerrit.wikimedia.org/r/#/settings/ssh-keys"
 echo "\n"
 cat "$pubkeypath.pub"
+
+# Gather information about the projects to configure run scripts for
+echo "Please enter the path to your mediawiki (example: /vagrant/mediawiki)"
+read mediawikiPath
+mediawikiPath="${mediawikiPath:=/vagrant/mediawiki}"
+
+# Let's configure a run script.  Assume it is one project for the moment.
+echo "Please enter a project name (example: Gather)"
+read projectName
+projectName="${projectName:=Gather}"
+
+echo "Please enter the name of extensions this project depends on (example: MobileFrontend)"
+read dependencyName
+dependencyName="${dependencyName:=MobileFrontend}"
+
+runScriptPath=/home/$username/barrybot/run.sh
+cat << EOF > $runScriptPath
+	#!/bin/sh
+	while :
+	do
+		# Do Gather - trigger a review on the result. --project corresponds to the Gerrit project you want to test.
+		# --core, --test --dependencies correspond to absolute directories on your machine. --core and --dependencies will be switched to master and updated before launching the browser tests.
+		./barrybot.py --noupdates 1 --review 1 --project mediawiki/extensions/$projectName --core $mediawikiPath --test $mediawikiPath/extensions/$projectName/ --dependencies $mediawikiPath/extensions/$dependencyName
+		# Do MobileFrontend but limit browser tests to those that are tagged @smoke
+		./barrybot.py --review 1 --project mediawiki/extensions/$dependencyName --core $mediawikiPath --test /vagrant/mediawiki/extensions/$dependencyName/ --tag smoke
+		# sleep for 30 minutes
+		sleep 1800
+	done
+EOF
+
+# make the script executable
+chmod +x $runScriptPath
+
+# Finally, change permissions on the barrybot dir
+chown -R $username:$username /home/$username/barrybot
+
+echo "Just created $runScriptPath, please make any modifications needed."
