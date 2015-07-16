@@ -10,73 +10,6 @@
 # Configuration: Username, BROWSER, MEDIAWIKI_URL, MEDIAWIKI_API_URL,
 #	MEDIAWIKI_USER, MEDIAWIKI_PASSWORD, 
 
-echo "Please enter a username for the bot on the system.  Your labs/Gerrit username is recommended."
-read username
-echo "Looking for user $username"
-
-# Check for user $username on the system 
-
-if test -e /home/$username; then
-	echo "User $username already exists."
-else
-	echo "Creating $username user."
-	#add user
-	adduser $username --home /home/$username
-
-	cd /home/$username && git clone https://github.com/jdlrobson/Barry-the-Browser-Test-Bot.git barrybot
-	# Add barrybot to the path
-	echo "PATH=\"/home/$username/barrybot:\$PATH\"" >> /home/$username/.bashrc
-
-	# Generate ssh key
-	echo "Please enter a path for your new public key: (default is /home/$username/.ssh/id_rsa)"
-	read pubkeypath
-	pubkeypath="${pubkeypath:=/home/$username/.ssh/id_rsa}"
-	su -c "ssh-keygen -f $pubkeypath" -m $username
-
-	# setup the variables needed by the browser tests
-	echo "Please enter mediawiki server url (default: http://one.wmflabs.org)"
-	read MW_SERVER
-	MW_SERVER="${MW_SERVER:=http://one.wmflabs.org}"
-
-	echo "Please enter the MediwaWiki script path (default: /w)"
-	read MW_SCRIPT_PATH
-	MW_SCRIPT_PATH="${MW_SCRIPT_PATH:=/w}"
-
-	echo "Please enther the mediawiki wiki url (default: $MW_SERVER/wiki/)"
-	read MEDIAWIKI_URL
-	MEDIAWIKI_URL="${MEDIAWIKI_URL:=$MW_SERVER/wiki/}"
-
-	echo "Please enter the test mediawiki account username (default: Mr_Selenium)"
-	read MEDIAWIKI_USER
-	MEDIAWIKI_USER="${MEDIAWIKI_USER:=Mr_Selenium}"
-
-	echo "Please enter the test MediaWiki account password (default: passwords"
-	read MEDIAWIKI_PASSWORD
-	MEDIAWIKI_PASSWORD="${MEDIAWIKI_PASSWORD:=passwords}"
-
-	echo "Please enter the mediawiki api url (default: $MW_SERVER$MW_SCRIPT_PATH/api.php)"
-	read MEDIAWIKI_API_URL
-	MEDIAWIKI_API_URL="${MEDIAWIKI_API_URL:=$MW_SERVER$MW_SCRIPT_PATH/api.php}"
-
-	echo "Please enter the mediawiki load url (default: $MW_SERVER$MW_SCRIPT_PATH/load.php)"
-	read MEDIAWIKI_LOAD_URL
-	MEDIAWIKI_LOAD_URL="${MEDIAWIKI_API_URL:=$MW_SERVER$MW_SCRIPT_PATH/load.php}"
-
-	echo "Please enter the mediawiki load url. Use '' for default browser, phantomjs for headless. (default: '')"
-	read BROWSER
-	BROWSER="${BROWSER:=phantomjs}"
-
-	# add variables to .bashrc
-	echo "export MW_SERVER=$MW_SERVER" >> /home/$username/.bashrc
-	echo "export MW_SCRIPT_PATH=$MW_SCRIPT_PATH" >> /home/$username/.bashrc
-	echo "export MEDIAWIKI_URL=$MEDIAWIKI_URL" >> /home/$username/.bashrc
-	echo "export MEDIAWIKI_USER=$MEDIAWIKI_USER" >> /home/$username/.bashrc
-	echo "export MEDIAWIKI_PASSWORD=$MEDIAWIKI_PASSWORD" >> /home/$username/.bashrc
-	echo "export MEDIAWIKI_API_URL=$MEDIAWIKI_API_URL" >> /home/$username/.bashrc
-	echo "export MEDIAWIKI_LOAD_URL=$MEDIAWIKI_LOAD_URL" >> /home/$username/.bashrc
-	echo "export BROWSER=$BROWSER" >> /home/$username/.bashrc
-fi
-
 # Install npm if not installed
 command -v npm >/dev/null 2>&1 || {
 	echo "Installing npm."
@@ -114,6 +47,89 @@ if test -e /usr/local/bin/git-review; then
 else
 	echo "Installing git-review"
 	apt-get install git-review
+fi
+
+echo "Please enter a username for the bot on the system.  Your labs/Gerrit username is recommended."
+read username
+echo "Looking for user $username"
+
+# Check for user $username on the system 
+
+if test -e /home/$username; then
+	echo "User $username already exists."
+else
+	echo "Creating $username user."
+	#add user
+	adduser $username --home /home/$username
+
+	cd /home/$username && git clone https://github.com/jdlrobson/Barry-the-Browser-Test-Bot.git barrybot
+	# Add barrybot to the path
+	echo "PATH=\"/home/$username/barrybot:\$PATH\"" >> /home/$username/.bashrc
+
+	# Generate ssh key
+	echo "Please enter a path for your new public key: (default is /home/$username/.ssh/id_rsa)"
+	read pubkeypath
+	pubkeypath="${pubkeypath:=/home/$username/.ssh/id_rsa}"
+	su -c "ssh-keygen -f $pubkeypath" -m $username
+
+	# setup the variables needed by the browser tests
+	echo "Please enter mediawiki server url (default: http://one.wmflabs.org)"
+	read MW_SERVER
+	MW_SERVER="${MW_SERVER:=http://one.wmflabs.org}"
+
+	echo "Please enter the MediwaWiki script path (default: /w)"
+	read MW_SCRIPT_PATH
+	MW_SCRIPT_PATH="${MW_SCRIPT_PATH:=/w}"
+
+	echo "Please enther the mediawiki wiki url (default: $MW_SERVER/wiki/)"
+	read MEDIAWIKI_URL
+	MEDIAWIKI_URL="${MEDIAWIKI_URL:=$MW_SERVER/wiki/}"
+
+	echo "Please enter the mediawiki api url (default: $MW_SERVER$MW_SCRIPT_PATH/api.php)"
+	read MEDIAWIKI_API_URL
+	MEDIAWIKI_API_URL="${MEDIAWIKI_API_URL:=$MW_SERVER$MW_SCRIPT_PATH/api.php}"
+
+	echo "Please enter the mediawiki load url (default: $MW_SERVER$MW_SCRIPT_PATH/load.php)"
+	read MEDIAWIKI_LOAD_URL
+	MEDIAWIKI_LOAD_URL="${MEDIAWIKI_API_URL:=$MW_SERVER$MW_SCRIPT_PATH/load.php}"
+
+	echo "Please enter the mediawiki load url. Use '' for default browser, phantomjs for headless. (default: '')"
+	read BROWSER
+	BROWSER="${BROWSER:=phantomjs}"
+
+	# Create a Mediawiki user account for testing via the api
+	cookiesFile="cookies.txt"
+	MEDIAWIKI_USER="Mr_Selenium"
+	MEDIAWIKI_PASSWORD="passwords"
+	# Make a query to get the token and store the wiki_session cookie
+	query="action=createaccount&name=$MEDIAWIKI_USER&password=$MEDIAWIKI_PASSWORD&format=json"
+	out=`curl -c $cookiesFile --data "$query" $MEDIAWIKI_API_URL`
+	# hack way of parsing json
+	result=`node -e "console.log( JSON.parse('$out').createaccount.result )"`
+	if [ "$result" = "NeedToken" ]
+	then
+		# get the token needed to make the account
+		token=`node -e "console.log( JSON.parse('$out').createaccount.token )"`
+		# make the same request again but this time with the token and the cookie
+		out=`curl -b $cookiesFile --data "$query&token=$token" $MEDIAWIKI_API_URL`
+		result=`node -e "console.log( JSON.parse('$out').createaccount.result )"`
+		if [ "$result" = "Success" ]
+		then
+			echo "User: $MEDIAWIKI_USER created"
+		fi
+	fi
+	# cleanup
+	rm $cookiesFile
+
+	# add variables to .bashrc
+	echo "export MW_SERVER=$MW_SERVER" >> /home/$username/.bashrc
+	echo "export MW_SCRIPT_PATH=$MW_SCRIPT_PATH" >> /home/$username/.bashrc
+	echo "export MEDIAWIKI_URL=$MEDIAWIKI_URL" >> /home/$username/.bashrc
+	echo "export MEDIAWIKI_USER=$MEDIAWIKI_USER" >> /home/$username/.bashrc
+	echo "export MEDIAWIKI_PASSWORD=MEDIAWIKI_PASSWORD" >> /home/$username/.bashrc
+	echo "export MEDIAWIKI_API_URL=$MEDIAWIKI_API_URL" >> /home/$username/.bashrc
+	echo "export MEDIAWIKI_LOAD_URL=$MEDIAWIKI_LOAD_URL" >> /home/$username/.bashrc
+	echo "export BROWSER=$BROWSER" >> /home/$username/.bashrc
 fi
 
 # Install and configure arcanist if not installed
