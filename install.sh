@@ -77,25 +77,11 @@ else
 	read MW_SERVER
 	MW_SERVER="${MW_SERVER:=http://one.wmflabs.org}"
 
-	echo "Please enter the MediwaWiki script path (default: /w)"
-	read MW_SCRIPT_PATH
-	MW_SCRIPT_PATH="${MW_SCRIPT_PATH:=/w}"
-
-	echo "Please enther the mediawiki wiki url (default: $MW_SERVER/wiki/)"
-	read MEDIAWIKI_URL
-	MEDIAWIKI_URL="${MEDIAWIKI_URL:=$MW_SERVER/wiki/}"
-
-	echo "Please enter the mediawiki api url (default: $MW_SERVER$MW_SCRIPT_PATH/api.php)"
-	read MEDIAWIKI_API_URL
-	MEDIAWIKI_API_URL="${MEDIAWIKI_API_URL:=$MW_SERVER$MW_SCRIPT_PATH/api.php}"
-
-	echo "Please enter the mediawiki load url (default: $MW_SERVER$MW_SCRIPT_PATH/load.php)"
-	read MEDIAWIKI_LOAD_URL
-	MEDIAWIKI_LOAD_URL="${MEDIAWIKI_API_URL:=$MW_SERVER$MW_SCRIPT_PATH/load.php}"
-
-	echo "Please enter the mediawiki load url. Use '' for default browser, phantomjs for headless. (default: '')"
-	read BROWSER
-	BROWSER="${BROWSER:=phantomjs}"
+	MW_SCRIPT_PATH="/w"
+	MEDIAWIKI_URL="$MW_SERVER/wiki/"
+	MEDIAWIKI_API_URL="$MW_SERVER$MW_SCRIPT_PATH/api.php"
+	MEDIAWIKI_LOAD_URL="$MW_SERVER$MW_SCRIPT_PATH/load.php"
+	BROWSER="phantomjs"
 
 	# Create a Mediawiki user account for testing via the api
 	cookiesFile="cookies.txt"
