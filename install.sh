@@ -145,10 +145,8 @@ echo "Add your new public key to gerrit at: \
 echo "\n"
 cat "$pubkeypath.pub"
 
-# Gather information about the projects to configure run scripts for
-echo "Please enter the path to your mediawiki (example: /vagrant/mediawiki)"
-read mediawikiPath
-mediawikiPath="${mediawikiPath:=/vagrant/mediawiki}"
+# Default mediawiki path
+mediawikiPath="/vagrant/mediawiki"
 
 # Let's configure a run script.  Assume it is one project for the moment.
 echo "Please enter a project name (example: Gather)"
@@ -168,7 +166,7 @@ cat << EOF > $runScriptPath
 		# --core, --test --dependencies correspond to absolute directories on your machine. --core and --dependencies will be switched to master and updated before launching the browser tests.
 		./barrybot.py --noupdates 1 --review 1 --project mediawiki/extensions/$projectName --core $mediawikiPath --test $mediawikiPath/extensions/$projectName/ --dependencies $mediawikiPath/extensions/$dependencyName
 		# Do MobileFrontend but limit browser tests to those that are tagged @smoke
-		./barrybot.py --review 1 --project mediawiki/extensions/$dependencyName --core $mediawikiPath --test /vagrant/mediawiki/extensions/$dependencyName/ --tag smoke
+		./barrybot.py --review 1 --project mediawiki/extensions/$dependencyName --core $mediawikiPath --test $mediawikiPath/extensions/$dependencyName/ --tag smoke
 		# sleep for 30 minutes
 		sleep 1800
 	done
