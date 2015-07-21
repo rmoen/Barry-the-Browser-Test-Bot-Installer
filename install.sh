@@ -157,6 +157,11 @@ echo "Please enter the name of extensions this project depends on (example: Mobi
 read dependencyName
 dependencyName="${dependencyName:=MobileFrontend}"
 
+echo "Please enter a test tag (optional. example: smoke)"
+read tagString
+# If tag is set, replace with --tag tagString
+tagString="${tagString:+--tag $tagString}"
+
 runScriptPath=/home/$username/barrybot/run.sh
 cat << EOF > $runScriptPath
 	#!/bin/sh
@@ -164,9 +169,7 @@ cat << EOF > $runScriptPath
 	do
 		# Do Gather - trigger a review on the result. --project corresponds to the Gerrit project you want to test.
 		# --core, --test --dependencies correspond to absolute directories on your machine. --core and --dependencies will be switched to master and updated before launching the browser tests.
-		./barrybot.py --noupdates 1 --review 1 --project mediawiki/extensions/$projectName --core $mediawikiPath --test $mediawikiPath/extensions/$projectName/ --dependencies $mediawikiPath/extensions/$dependencyName
-		# Do MobileFrontend but limit browser tests to those that are tagged @smoke
-		./barrybot.py --review 1 --project mediawiki/extensions/$dependencyName --core $mediawikiPath --test $mediawikiPath/extensions/$dependencyName/ --tag smoke
+		./barrybot.py --noupdates 1 --review 1 --project mediawiki/extensions/$projectName --core $mediawikiPath --test $mediawikiPath/extensions/$projectName/ --dependencies $mediawikiPath/extensions/$dependencyName $tagString
 		# sleep for 30 minutes
 		sleep 1800
 	done
