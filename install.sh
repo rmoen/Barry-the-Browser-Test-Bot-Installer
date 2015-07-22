@@ -108,6 +108,7 @@ else
 	rm $cookiesFile
 
 	# add variables to .bashrc
+	echo "export MEDIAWIKI_ENVIRONMENT=barry" >> /home/$username/.bashrc
 	echo "export MW_SERVER=$MW_SERVER" >> /home/$username/.bashrc
 	echo "export MW_SCRIPT_PATH=$MW_SCRIPT_PATH" >> /home/$username/.bashrc
 	echo "export MEDIAWIKI_URL=$MEDIAWIKI_URL" >> /home/$username/.bashrc
