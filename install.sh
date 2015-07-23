@@ -72,9 +72,9 @@ else
 	su -c "ssh-keygen -f $pubkeypath" -m $username
 
 	# setup the variables needed by the browser tests
-	echo "Please enter mediawiki server url (default: http://one.wmflabs.org)"
+	echo "Please enter mediawiki server url (default: http://reading-smoketest.wmflabs.org)"
 	read MW_SERVER
-	MW_SERVER="${MW_SERVER:=http://one.wmflabs.org}"
+	MW_SERVER="${MW_SERVER:=http://reading-smoketest.wmflabs.org}"
 
 	MW_SCRIPT_PATH="/w"
 	MEDIAWIKI_URL="$MW_SERVER/wiki/"
