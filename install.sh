@@ -66,9 +66,8 @@ else
 	echo "PATH=\"/home/$username/barrybot:\$PATH\"" >> /home/$username/.bashrc
 
 	# Generate ssh key
-	echo "Please enter a path for your new public key: (default is /home/$username/.ssh/id_rsa)"
-	read pubkeypath
-	pubkeypath="${pubkeypath:=/home/$username/.ssh/id_rsa}"
+	echo "Generating new ssh key..."
+	pubkeypath="/home/$username/.ssh/id_rsa"
 	su -c "ssh-keygen -f $pubkeypath" -m $username
 
 	# setup the variables needed by the browser tests
@@ -155,6 +154,9 @@ projectName="${projectName:=Gather}"
 projectPath="$mediawikiPath/extensions/$projectName/"
 # Hack: Run bundle install as the original user
 su -c "cd $projectPath && bundle install" -m $USER
+
+# Setup a Spanish Interwiki link using sql
+mysql -u root -pvagrant < interwiki.sql
 
 echo "Please enter the name of the extension this project depends on (optional. example: MobileFrontend)"
 read dependencyString
