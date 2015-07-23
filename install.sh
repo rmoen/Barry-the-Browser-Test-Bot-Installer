@@ -156,7 +156,7 @@ projectPath="$mediawikiPath/extensions/$projectName/"
 su -c "cd $projectPath && bundle install" -m $USER
 
 # Setup a Spanish Interwiki link using sql
-mysql -u root -pvagrant < ./interwiki.sql
+mysql -u root -pvagrant < "$(dirname -- "$0")/interwiki.sql"
 
 echo "Please enter the name of the extension this project depends on (optional. example: MobileFrontend)"
 read dependencyString
