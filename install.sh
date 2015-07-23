@@ -60,10 +60,7 @@ if test -e /home/$username; then
 else
 	echo "Creating $username user."
 	#add user
-	adduser $username --home /home/$username
-	#change primary group to wikidev so it may modifiy vagrant
-	usermod $username -g wikidev
-
+	adduser --ingroup wikidev $username
 	cd /home/$username && git clone https://github.com/jdlrobson/Barry-the-Browser-Test-Bot.git barrybot
 	# Add barrybot to the path
 	echo "PATH=\"/home/$username/barrybot:\$PATH\"" >> /home/$username/.bashrc
