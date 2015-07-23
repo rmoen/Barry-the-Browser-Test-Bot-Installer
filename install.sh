@@ -147,6 +147,11 @@ cat "$pubkeypath.pub"
 # Default mediawiki path
 mediawikiPath="/vagrant/mediawiki"
 
+# Required for browser tests ui_links.feature
+echo '$wgRightsText = "Creative Commons Attribution 3.0";' >> $mediawikiPath/LocalSettings.php
+echo '$wgRightsUrl = "http://creativecommons.org/licenses/by-sa/3.0/";' >> $mediawikiPath/LocalSettings.php
+echo '$wgPasswordAttemptThrottle = false;' >> $mediawikiPath/LocalSettings.php
+
 # Let's configure a run script.  Assume it is one project for the moment.
 echo "Please enter a project name (example: Gather)"
 read projectName
