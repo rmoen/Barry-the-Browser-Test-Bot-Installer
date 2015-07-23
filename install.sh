@@ -112,7 +112,7 @@ else
 	echo "export MW_SCRIPT_PATH=$MW_SCRIPT_PATH" >> /home/$username/.bashrc
 	echo "export MEDIAWIKI_URL=$MEDIAWIKI_URL" >> /home/$username/.bashrc
 	echo "export MEDIAWIKI_USER=$MEDIAWIKI_USER" >> /home/$username/.bashrc
-	echo "export MEDIAWIKI_PASSWORD=MEDIAWIKI_PASSWORD" >> /home/$username/.bashrc
+	echo "export MEDIAWIKI_PASSWORD=$MEDIAWIKI_PASSWORD" >> /home/$username/.bashrc
 	echo "export MEDIAWIKI_API_URL=$MEDIAWIKI_API_URL" >> /home/$username/.bashrc
 	echo "export MEDIAWIKI_LOAD_URL=$MEDIAWIKI_LOAD_URL" >> /home/$username/.bashrc
 	echo "export BROWSER=$BROWSER" >> /home/$username/.bashrc
@@ -182,6 +182,6 @@ EOF
 chmod +x $runScriptPath
 
 # Finally, change permissions on the barrybot dir
-chown -R $username:$username /home/$username/barrybot
+chown -R $username:wikidev /home/$username/barrybot
 
 echo "Just created $runScriptPath, please make any modifications needed."
