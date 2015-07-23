@@ -61,6 +61,8 @@ else
 	echo "Creating $username user."
 	#add user
 	adduser $username --home /home/$username
+	#change primary group to wikidev so it may modifiy vagrant
+	usermod $username -g wikidev
 
 	cd /home/$username && git clone https://github.com/jdlrobson/Barry-the-Browser-Test-Bot.git barrybot
 	# Add barrybot to the path
@@ -153,10 +155,13 @@ mediawikiPath="/vagrant/mediawiki"
 echo "Please enter a project name (example: Gather)"
 read projectName
 projectName="${projectName:=Gather}"
+projectPath="$mediawikiPath/extensions/$projectName/"
+# Hack: Run bundle install as the original user
+su -c "cd $projectPath && bundle install" -m $USER
 
-echo "Please enter the name of extensions this project depends on (example: MobileFrontend)"
-read dependencyName
-dependencyName="${dependencyName:=MobileFrontend}"
+echo "Please enter the name of the extension this project depends on (optional. example: MobileFrontend)"
+read dependencyString
+dependencyString="${dependencyString:+--dependencies $mediawikiPath/extensions/$dependencyString}"
 
 echo "Please enter a test tag (optional. example: smoke)"
 read tagString
@@ -170,7 +175,7 @@ cat << EOF > $runScriptPath
 	do
 		# Do Gather - trigger a review on the result. --project corresponds to the Gerrit project you want to test.
 		# --core, --test --dependencies correspond to absolute directories on your machine. --core and --dependencies will be switched to master and updated before launching the browser tests.
-		./barrybot.py --noupdates 1 --review 1 --project mediawiki/extensions/$projectName --core $mediawikiPath --test $mediawikiPath/extensions/$projectName/ --dependencies $mediawikiPath/extensions/$dependencyName $tagString
+		./barrybot.py --review 1 --paste 1 --project mediawiki/extensions/$projectName --core $mediawikiPath --test $projectPath $dependencyString $tagString
 		# sleep for 30 minutes
 		sleep 1800
 	done
