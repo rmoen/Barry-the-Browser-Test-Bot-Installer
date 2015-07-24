@@ -83,7 +83,7 @@ else
 
 	# Create a Mediawiki user account for testing via the api
 	cookiesFile="cookies.txt"
-	MEDIAWIKI_USER="Mr Selenium"
+	MEDIAWIKI_USER="Mr_Selenium"
 	# Random 10 character password
 	MEDIAWIKI_PASSWORD=`openssl rand -base64 10`
 
