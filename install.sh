@@ -49,6 +49,12 @@ else
 	apt-get install git-review
 fi
 
+echo "Please enter the gerrit account name (eg: barrybrowsertestbot)"
+read gerritUsername
+
+# Set the git username to the gerrit account
+su -c "git config --global user.name $gerritUsername" -m $username
+
 echo "Please enter a username for the bot on the system.   Has to be different name than the bot's gerrit username."
 read username
 echo "Looking for user $username"
@@ -164,7 +170,7 @@ cat << EOF > $runScriptPath
 	do
 		# Do Gather - trigger a review on the result. --project corresponds to the Gerrit project you want to test.
 		# --core, --test --dependencies correspond to absolute directories on your machine. --core and --dependencies will be switched to master and updated before launching the browser tests.
-		./barrybot.py --review 1 --paste 1 --project mediawiki/extensions/$projectName --core $mediawikiPath --test $projectPath $dependencyString $tagString
+		./barrybot.py --user $gerritUsername --review 1 --paste 1 --project mediawiki/extensions/$projectName --core $mediawikiPath --test $projectPath $dependencyString $tagString
 		# sleep for 30 minutes
 		sleep 1800
 	done
@@ -175,12 +181,6 @@ chmod +x $runScriptPath
 
 # Make it so wikidev can modify vagrant
 chmod -R g+w $mediawikiPath
-
-echo "Please enter the gerrit account name (eg: barrybrowsertestbot)"
-read gerritUsername
-
-# Set the git username to the gerrit account
-su -c "git config --global user.name $gerritUsername" -m $username
 
 # Change permissions on the barrybot dir
 chown -R $username:wikidev /home/$username/barrybot
