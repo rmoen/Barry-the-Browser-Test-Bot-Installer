@@ -185,4 +185,7 @@ su -c "git config --global user.name $gerritUsername" -m $username
 # Change permissions on the barrybot dir
 chown -R $username:wikidev /home/$username/barrybot
 
+# Setup git-review
+su -c "cd $mediawikiPath && git-review" -m $username
+
 echo "Just created $runScriptPath, please make any modifications needed."
