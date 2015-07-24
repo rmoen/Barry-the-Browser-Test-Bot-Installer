@@ -49,7 +49,7 @@ else
 	apt-get install git-review
 fi
 
-echo "Please enter a username for the bot on the system.  Your labs/Gerrit username is recommended."
+echo "Please enter a username for the bot on the system.   Has to be different name than the bot's gerrit username."
 read username
 echo "Looking for user $username"
 
@@ -173,7 +173,16 @@ EOF
 # make the script executable
 chmod +x $runScriptPath
 
-# Finally, change permissions on the barrybot dir
+# Make it so wikidev can modify vagrant
+chmod -R g+w $mediawikiPath
+
+echo "Please enter the gerrit account name (eg: barrybrowsertestbot)"
+read gerritUsername
+
+# Set the git username to the gerrit account
+su -c "git config --global user.name $gerritUsername" -m $username
+
+# Change permissions on the barrybot dir
 chown -R $username:wikidev /home/$username/barrybot
 
 echo "Just created $runScriptPath, please make any modifications needed."
