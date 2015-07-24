@@ -137,8 +137,6 @@ echo '$wgRightsText = "Creative Commons Attribution 3.0";' >> $mediawikiPath/Loc
 echo '$wgRightsUrl = "http://creativecommons.org/licenses/by-sa/3.0/";' >> $mediawikiPath/LocalSettings.php
 echo '$wgPasswordAttemptThrottle = false;' >> $mediawikiPath/LocalSettings.php
 
- php maintenance/createAndPromote.php "Mr Selenium" --bureaucrat --force --sysop
-
 # Let's configure a run script.  Assume it is one project for the moment.
 echo "Please enter a project name (example: Gather)"
 read projectName
