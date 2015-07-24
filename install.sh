@@ -83,27 +83,9 @@ else
 
 	# Create a Mediawiki user account for testing via the api
 	cookiesFile="cookies.txt"
-	MEDIAWIKI_USER="Mr_Selenium"
-	MEDIAWIKI_PASSWORD="passwords"
-	# Make a query to get the token and store the wiki_session cookie
-	query="action=createaccount&name=$MEDIAWIKI_USER&password=$MEDIAWIKI_PASSWORD&format=json"
-	out=`curl -c $cookiesFile --data "$query" $MEDIAWIKI_API_URL`
-	# hack way of parsing json
-	result=`node -e "console.log( JSON.parse('$out').createaccount.result )"`
-	if [ "$result" = "NeedToken" ]
-	then
-		# get the token needed to make the account
-		token=`node -e "console.log( JSON.parse('$out').createaccount.token )"`
-		# make the same request again but this time with the token and the cookie
-		out=`curl -b $cookiesFile --data "$query&token=$token" $MEDIAWIKI_API_URL`
-		result=`node -e "console.log( JSON.parse('$out').createaccount.result )"`
-		if [ "$result" = "Success" ]
-		then
-			echo "User: $MEDIAWIKI_USER created"
-		fi
-	fi
-	# cleanup
-	rm $cookiesFile
+	MEDIAWIKI_USER="Mr Selenium"
+	echo "Please enter a password for the MediaWiki test user account $MEDIAWIKI_USER:"
+	read MEDIAWIKI_PASSWORD
 
 	# add variables to .bashrc
 	echo "export MEDIAWIKI_ENVIRONMENT=barry" >> /home/$username/.bashrc
@@ -147,10 +129,15 @@ cat "$pubkeypath.pub"
 # Default mediawiki path
 mediawikiPath="/vagrant/mediawiki"
 
+# Create and promote Mr_Selenium
+php $mediawikiPath/maintenance/createAndPromote.php "$MEDIAWIKI_USER" "$MEDIAWIKI_PASSWORD" --bureaucrat --force --sysop
+
 # Required for browser tests ui_links.feature
 echo '$wgRightsText = "Creative Commons Attribution 3.0";' >> $mediawikiPath/LocalSettings.php
 echo '$wgRightsUrl = "http://creativecommons.org/licenses/by-sa/3.0/";' >> $mediawikiPath/LocalSettings.php
 echo '$wgPasswordAttemptThrottle = false;' >> $mediawikiPath/LocalSettings.php
+
+ php maintenance/createAndPromote.php "Mr Selenium" --bureaucrat --force --sysop
 
 # Let's configure a run script.  Assume it is one project for the moment.
 echo "Please enter a project name (example: Gather)"
