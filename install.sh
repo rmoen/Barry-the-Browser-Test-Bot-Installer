@@ -180,7 +180,7 @@ EOF
 chmod +x $runScriptPath
 
 # Make it so wikidev can modify vagrant
-chmod -R g+w $mediawikiPath
+chmod -R a+rw $mediawikiPath
 
 # Change permissions on the barrybot dir
 chown -R $username:wikidev /home/$username/barrybot
