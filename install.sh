@@ -84,8 +84,8 @@ else
 	# Create a Mediawiki user account for testing via the api
 	cookiesFile="cookies.txt"
 	MEDIAWIKI_USER="Mr Selenium"
-	echo "Please enter a password for the MediaWiki test user account $MEDIAWIKI_USER:"
-	read MEDIAWIKI_PASSWORD
+	# Random 10 character password
+	MEDIAWIKI_PASSWORD=`openssl rand -base64 10`
 
 	# add variables to .bashrc
 	echo "export MEDIAWIKI_ENVIRONMENT=barry" >> /home/$username/.bashrc
