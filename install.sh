@@ -186,6 +186,7 @@ chmod -R a+rw $mediawikiPath
 chown -R $username:wikidev /home/$username/barrybot
 
 # Setup git-review
+su -c "git config --global --add gitreview.username browsertestbot" -m $username
 su -c "cd $mediawikiPath && git-review" -m $username
 
 echo "Just created $runScriptPath, please make any modifications needed."
