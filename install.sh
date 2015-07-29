@@ -53,7 +53,7 @@ echo "Please enter the gerrit account name (eg: barrybrowsertestbot)"
 read gerritUsername
 
 # Set the git username to the gerrit account
-su -c "git config --global user.name $gerritUsername" -m $username
+su -c "cd /home/$username && git config --global user.name $gerritUsername" -m $username
 
 echo "Please enter a username for the bot on the system.   Has to be different name than the bot's gerrit username."
 read username
@@ -186,7 +186,7 @@ chmod -R a+rw $mediawikiPath
 chown -R $username:wikidev /home/$username/barrybot
 
 # Setup git-review
-su -c "git config --global --add gitreview.username browsertestbot" -m $username
+su -c "cd /home/$username && git config --global --add gitreview.username browsertestbot" -m $username
 su -c "cd $mediawikiPath && git-review" -m $username
 
 echo "Just created $runScriptPath, please make any modifications needed."
