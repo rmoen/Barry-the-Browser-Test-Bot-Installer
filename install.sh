@@ -93,7 +93,6 @@ echo "export MEDIAWIKI_API_URL=$MEDIAWIKI_API_URL" >> /home/$username/.bashrc
 echo "export MEDIAWIKI_LOAD_URL=$MEDIAWIKI_LOAD_URL" >> /home/$username/.bashrc
 echo "export BROWSER=$BROWSER" >> /home/$username/.bashrc
 
-
 # Install and configure arcanist if not installed
 if test -e /usr/local/bin/arcanist/; then
 	echo "Arcanist found"
@@ -140,9 +139,6 @@ projectPath="$mediawikiPath/extensions/$projectName/"
 # Hack: Run bundle install as the original user
 su -c "cd $projectPath && bundle install" -m $USER
 
-# Setup a Spanish Interwiki link using sql
-cd "${BASH_SOURCE%/*}" && mysql -u root -pvagrant < interwiki.sql
-
 echo "Please enter the name of the extension this project depends on (optional. example: MobileFrontend)"
 read dependencyString
 dependencyString="${dependencyString:+--dependencies $mediawikiPath/extensions/$dependencyString}"
@@ -171,6 +167,9 @@ cat << EOF > $runScriptPath
 		sleep 1800
 	done
 EOF
+
+# Add row to support spanish language on Selenium_language_test_page.
+mysql -u root -pvagrant wiki -e "INSERT INTO interwiki (iw_prefix, iw_url, iw_local, iw_trans) VALUES ('es', 'http://wikifoo.org/es/index.php/$1', 0, 0);"
 
 # make the script executable
 chmod +x $runScriptPath
