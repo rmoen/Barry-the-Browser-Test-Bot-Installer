@@ -52,15 +52,11 @@ fi
 echo "Please enter the gerrit account name (eg: barrybrowsertestbot)"
 read gerritUsername
 
-# Set the git username to the gerrit account
-su -c "cd /home/$username && git config --global user.name $gerritUsername" -m $username
-
-echo "Please enter a username for the bot on the system.   Has to be different name than the bot's gerrit username."
+echo "Please enter a name for the new user on the system for the bot to run under. \n NOTE: This has to be different than the gerrit username."
 read username
 echo "Looking for user $username"
 
 # Check for user $username on the system 
-
 if test -e /home/$username; then
 	echo "User $username already exists."
 else
@@ -86,9 +82,7 @@ else
 	MEDIAWIKI_API_URL="$MW_SERVER$MW_SCRIPT_PATH/api.php"
 	MEDIAWIKI_LOAD_URL="$MW_SERVER$MW_SCRIPT_PATH/load.php"
 	BROWSER="phantomjs"
-
-	# Create a Mediawiki user account for testing via the api
-	cookiesFile="cookies.txt"
+	# Promoted user account
 	MEDIAWIKI_USER="Mr_Selenium"
 	# Random 10 character password
 	MEDIAWIKI_PASSWORD=`openssl rand -base64 10`
@@ -165,7 +159,12 @@ tagString="${tagString:+--tag $tagString}"
 
 runScriptPath=/home/$username/barrybot/run.sh
 cat << EOF > $runScriptPath
-	#!/bin/sh
+	#!/bin/bash
+	# Setting up git config here as had issues running this as sudo
+	git config --global --add gitreview.username "$gerritUsername"
+	git config --global user.name "$gerritUsername"
+	cd /vagrant/mediawiki && git-review
+
 	while :
 	do
 		# Do Gather - trigger a review on the result. --project corresponds to the Gerrit project you want to test.
@@ -184,9 +183,5 @@ chmod -R a+rw $mediawikiPath
 
 # Change permissions on the barrybot dir
 chown -R $username:wikidev /home/$username/barrybot
-
-# Setup git-review
-su -c "cd /home/$username && git config --global --add gitreview.username browsertestbot" -m $username
-su -c "cd $mediawikiPath && git-review" -m $username
 
 echo "Just created $runScriptPath, please make any modifications needed."
