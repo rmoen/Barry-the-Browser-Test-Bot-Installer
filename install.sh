@@ -153,7 +153,7 @@ cat << EOF > $runScriptPath
 	#!/bin/bash
 	# Setting up git config here as had issues running this as sudo
 	git config --global --add gitreview.username "$gerritUsername"
-	git config --global user.name "$gerritUsername"
+	git config --global --add user.name "$gerritUsername"
 	cd $projectPath && git-review
 	# bundle install with path and it will remember to install gems there for the user
 	cd $projectPath && bundle install --path ~/.gem
