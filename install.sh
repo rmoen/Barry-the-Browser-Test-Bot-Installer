@@ -157,7 +157,8 @@ cat << EOF > $runScriptPath
 	cd $projectPath && git-review
 	# bundle install with path and it will remember to install gems there for the user
 	cd $projectPath && bundle install --path ~/.gem
-
+	# arc config
+	arc set-config default "https://phabricator.wikimedia.org"
 	while :
 	do
 		# Do Gather - trigger a review on the result. --project corresponds to the Gerrit project you want to test.
